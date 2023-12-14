@@ -55,12 +55,12 @@ resource containerAppResource 'Microsoft.App/containerApps@2022-03-01' = {
         external: useExternalIngress
         targetPort: containerPort
       }
-      dapr: {
-        enabled: true
-        appPort: containerPort
-        appId: sanitizedserviceName
-        appProtocol: 'http'
-      }
+      // dapr: {
+      //   enabled: true
+      //   appPort: containerPort
+      //   appId: sanitizedserviceName
+      //   appProtocol: 'http'
+      // }
     }
     template: {
       containers: [
