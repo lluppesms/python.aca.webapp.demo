@@ -1,0 +1,3 @@
+*.json
+*.ps1
+!resourceabbreviations.json

@@ -1,0 +1,38 @@
+# ----------------------------------------------------------------------------------------------------
+# Pipeline to deploy core Azure Container App resources
+# ----------------------------------------------------------------------------------------------------
+# This needs the variable group "PythonFlaskDemo" - see readme.md for details.
+# ----------------------------------------------------------------------------------------------------
+name: $(date:yyyy).$(date:MM).$(date:dd)$(rev:.r)
+pool:
+  vmImage: 'ubuntu-latest'
+variables:
+  - group: PythonFlaskDemo
+
+# ----------------------------------------------------------------------------------------------------
+trigger: none
+
+# ----------------------------------------------------------------------------------------------------
+parameters:
+  - name: deployMultipleEnvironments
+    displayName: Deploy Multiple Environments
+    type: boolean
+    default: false
+
+# ----------------------------------------------------------------------------------------------------
+stages:
+- ${{ if eq(lower(parameters.deployMultipleEnvironments), 'false') }}:
+  - template: pipes/infra-only-pipe.yml
+    parameters:
+      environments: ['DEMO']
+      variableGroupName: 'PythonFlaskDemo'
+      bicepFolderName: 'infra/bicep'
+      bicepFileName: 'main-infra.bicep'
+      
+- ${{ if eq(lower(parameters.deployMultipleEnvironments), 'true') }}:
+  - template: pipes/infra-only-pipe.yml
+    parameters:
+      environments: ['DEV','QA']
+      variableGroupName: 'PythonFlaskDemo'
+      bicepFolderName: 'infra/bicep'
+      bicepFileName: 'main-infra.bicep'

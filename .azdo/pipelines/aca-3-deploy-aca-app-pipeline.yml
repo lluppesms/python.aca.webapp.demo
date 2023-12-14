@@ -1,0 +1,40 @@
+# ----------------------------------------------------------------------------------------------------
+# Pipeline to deploy all Azure Container App Modules for an application
+# ----------------------------------------------------------------------------------------------------
+# This needs the variable group "PythonFlaskDemo" - see readme.md for details.
+# ----------------------------------------------------------------------------------------------------
+name: $(date:yyyy).$(date:MM).$(date:dd)$(rev:.r)
+pool:
+  vmImage: 'ubuntu-latest'
+variables:
+  - group: PythonFlaskDemo
+
+# ----------------------------------------------------------------------------------------------------
+trigger: none
+
+# ----------------------------------------------------------------------------------------------------
+parameters:
+  - name: deployMultipleEnvironments
+    displayName: Deploy Multiple Environments
+    type: boolean
+    default: false
+
+# ----------------------------------------------------------------------------------------------------
+stages:
+- ${{ if eq(lower(parameters.deployMultipleEnvironments), 'false') }}:
+  - template: pipes/aca-app-build-deploy-pipe.yml
+    parameters:
+      environments: ['DEMO']
+      variableGroupName: 'PythonFlaskDemo'
+      serviceName: 'PythonWebApp'
+      projectFolderName: 'src'
+      containerPort: 6001
+
+- ${{ if eq(lower(parameters.deployMultipleEnvironments), 'true') }}:
+  - template: pipes/aca-app-build-deploy-pipe.yml
+    parameters:
+      environments: ['DEV','QA']
+      variableGroupName: 'PythonFlaskDemo'
+      serviceName: 'PythonWebApp'
+      projectFolderName: 'src'
+      containerPort: 6001
